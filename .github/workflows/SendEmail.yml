@@ -39,7 +39,7 @@ jobs:
           apidog report -i apidog-report.json -o apidog-report.txt
 
       - name: Send Test Report Email
-        uses: sendgrid/actions/email@v3
+        uses: mmichailidis/sendgrid-mail-action@v1.0
         env:
           SENDGRID_API_KEY: ${{ secrets.SENDGRID_API_KEY }}
         with:
