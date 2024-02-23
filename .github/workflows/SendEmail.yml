@@ -1,24 +1,34 @@
-name: Send Email with Attachment
+name: Automated API Tests
 on:
-  push:
-    branches:
-      - main
- 
+  - push
+  - pull_request
 jobs:
-  send_email:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - name: Setup Node.js environment
+        uses: actions/setup-node@v2
+        with:
+          node-version: "14"
+      - name: Install Apidog CLI
+        run: npm install -g apidog-cli
+      - name: Running Test Scenario
+        run: apidog run
+          https://api.apidog.com/api/v1/projects/455055/api-test/ci-config/349135/detail?token=xrwGYepeqT3Yx1KYguS0Pt
+          -r html,cli
+  -'jobs':
+    -send_email:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout Repository
         uses: actions/checkout@v2
- 
       - name: Set up Node.js
         uses: actions/setup-node@v2
         with:
-          node-version: '14'
- 
+          node-version: "14"
       - name: Install SendGrid Package
         run: npm install @sendgrid/mail
- 
       - name: Send Email
         env:
           SENDGRID_API_KEY: ${{ secrets.SENDGRID_API_KEY }}
