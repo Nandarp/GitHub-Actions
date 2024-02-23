@@ -9,8 +9,8 @@ const attachmentContent = fs.readFileSync('path/to/example.txt', { encoding: 'ba
  
 // Define the email message
 const msg = {
-  to: 'recipient@example.com',
-  from: 'sender@example.com',
+  to: 'nandakumarap@anthology.com',
+  from: 'ivpnotifications@products.anthology.com',
   subject: 'Email with Attachment',
   text: 'See attached file',
   attachments: [
