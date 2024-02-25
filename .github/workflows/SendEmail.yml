@@ -8,7 +8,7 @@ jobs:
             - uses: actions/checkout@v3
             - name: Create dir
               run: |
-                mkdir  TestArtifacts
+                mkdir  testArtifacts
 
             - name: Setup Node.js environment
               uses: actions/setup-node@v2
@@ -19,7 +19,7 @@ jobs:
               run: npm install -g apidog-cli
 
             - name: Running Test Scenario
-              run: apidog run https://api.apidog.com/api/v1/projects/455055/api-test/ci-config/349135/detail?token=xrwGYepeqT3Yx1KYguS0Pt -r html,cli htmlextra --reporter-htmlextra-export testArtifacts/htmlreport.html
+              run: apidog run https://api.apidog.com/api/v1/projects/455055/api-test/ci-config/349135/detail?token=xrwGYepeqT3Yx1KYguS0Pt -r cli,htmlextra --reporter-htmlextra-export testArtifacts/htmlreport.html
               
             - name: Output the results
               uses: actions/upload-artifact@v3
