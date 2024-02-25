@@ -17,7 +17,7 @@ jobs:
         run: npm install @sendgrid/mail
         
       - name: Create testArtifacts directory
-        run: mkdir -p testArtifacts
+        run: mkdir TestArtifacts
         
       - name: Install Node.js
         uses: actions/setup-node@v2
@@ -30,8 +30,13 @@ jobs:
       - name: Run APIdog tests and generate HTML report
         run: |
           curl -o testArtifacts/apidog_report.html "https://api.apidog.com/api/v1/projects/455055/api-test/ci-config/349135/detail?token=xrwGYepeqT3Yx1KYguS0Pt" && \
-          apidog run https://api.apidog.com/api/v1/projects/455055/api-test/ci-config/349135/detail?token=xrwGYepeqT3Yx1KYguS0Pt -r cli
- 
+          apidog run https://api.apidog.com/api/v1/projects/455055/api-test/ci-config/349135/detail?token=xrwGYepeqT3Yx1KYguS0Pt -r cli ---
+      - name: Output the results
+        uses: actions/upload-artifact@v3
+        with: 
+          name: Reports
+          path: testArtifacts
+
       - name: Send email with HTML report
         run: node sendEmail.js
         env:
