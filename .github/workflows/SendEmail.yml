@@ -1,56 +1,12 @@
 name: Automated Tests and Reporting
 
 on:
-  push:
-    branches:
-      - main
-  pull_request:
-    branches:
-      - main
+  [workflow_dispatch]
 
 jobs:
   run_tests_and_send_report:
     runs-on: ubuntu-latest
 
     steps:
-      - name: Checkout Repository
-        uses: actions/checkout@v2
-
-      - name: Setup Node.js environment
-        uses: actions/setup-node@v2
-        with:
-          node-version: "14"
-
-      - name: Install Dependencies
-        run: npm install
-
-      - name: Run Automated Tests
-        run: npm test
-
-      - name: Install Apidog CLI
-        run: npm install -g apidog-cli
-
-      - name: Run Apidog Test Cases
-        run: apidog run https://api.apidog.com/api/v1/projects/455055/api-test/ci-config/349135/detail?token=xrwGYepeqT3Yx1KYguS0Pt -r json
-
-      - name: Generate Test Report
-        run: |
-          # Convert Apidog JSON output to text format
-          apidog report -i apidog-report.json -o apidog-report.txt
-
-      - name: Send Test Report Email
-        uses: mmichailidis/sendgrid-mail-action@v1.0
-        env:
-          SENDGRID_API_KEY: ${{ secrets.SENDGRID_API_KEY }}
-        with:
-          to: nandakumarap@anthology.com
-          from: ivpnotifications@products.anthology.com
-          subject: Automated Test Report
-          text: |
-            Dear recipient,
-
-            Please find the attached test report.
-
-            Best regards,
-            Your Name
-          attachments: apidog-report.txt
+      - name: first-step
+        run: echo "Hello Krishna"
