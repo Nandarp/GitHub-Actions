@@ -1,12 +1,28 @@
-name: Automated Tests and Reporting
-
-on:
-  [workflow_dispatch]
+name: Postman
+on: workflow_dispatch
 
 jobs:
-  run_tests_and_send_report:
-    runs-on: ubuntu-latest
+    test-api:
+        runs-on: ubuntu-latest
+        steps:
+            - uses: actions/checkout@v3
+            - name: Create dir
+              run: |
+                mkdir  TestArtifacts
 
-    steps:
-      - name: first-step
-        run: echo "Hello Krishna"
+            - name: Setup Node.js environment
+              uses: actions/setup-node@v2
+              with:
+                node-version: '14'
+
+            - name: Install Apidog CLI
+              run: npm install -g apidog-cli
+
+            - name: Running Test Scenario
+              run: apidog run https://api.apidog.com/api/v1/projects/455055/api-test/ci-config/349135/detail?token=xrwGYepeqT3Yx1KYguS0Pt -r cli,htmlextra --reporter-htmlextra-export testArtifacts/htmlreport.html
+
+            - name: Output the results
+              uses: actions/upload-artifact@v3
+              with: 
+                name: Reports
+                path: testArtifacts
