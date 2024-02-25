@@ -1,7 +1,8 @@
 const fs = require('fs');
  
 // Read JSON report file
-const jsonReportPath = process.env.GITHUB_WORKSPACE + '/apidog_report.json';
+#const jsonReportPath = process.env.GITHUB_WORKSPACE + '/apidog_report.json';
+const jsonReportPath = testArtifacts/apidog_report.json ;
 const reportData = JSON.parse(jsonReport);
  
 // Generate HTML content
