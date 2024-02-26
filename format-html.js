@@ -2,7 +2,7 @@ const fs = require('fs');
 const prettier = require('prettier');
 
 // Read raw HTML data
-const rawData = fs.readFileSync('testArtifacts\apidog_report.html', 'utf8');
+const rawData = fs.readFileSync('testArtifacts/apidog_report.html', 'utf8');
 
 // Format HTML using prettier
 const formattedHtml = prettier.format(rawData, {
