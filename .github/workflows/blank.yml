@@ -1,9 +1,6 @@
 name: APIdogCLI Test and Report
  
-on:
-  push:
-    branches:
-      - main  # Trigger the workflow on pushes to the main branch
+on: workflow_dispatch
  
 jobs:
   apidog_test:
