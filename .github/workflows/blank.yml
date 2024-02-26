@@ -11,7 +11,7 @@ jobs:
  
       # Step to run APIdog tests and save JSON report as an artifact
       - name: Run APIdog tests
-        run: apidog run https://api.apidog.com/api/v1/projects/455055/api-test/ci-config/349135/detail?token=xrwGYepeqT3Yx1KYguS0Pt -r cli,json
+        run: apidog run https://api.apidog.com/api/v1/projects/455055/api-test/ci-config/349135/detail?token=xrwGYepeqT3Yx1KYguS0Pt -r json,cli
         # This command runs APIdog tests and generates both CLI and JSON reports
  
       - name: Archive JSON report as artifact
