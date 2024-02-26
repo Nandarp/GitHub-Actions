@@ -1,4 +1,4 @@
-const fs = require('fs').promises;
+const fs = require('fs').promises; // Use fs.promises for asynchronous file operations
 const prettier = require('prettier');
 
 async function formatHtml() {
@@ -18,8 +18,9 @@ async function formatHtml() {
     console.log('HTML formatting complete!');
   } catch (error) {
     console.error('Error formatting HTML:', error);
-    process.exit(1); // Exit with error status
+    process.exit(1); // Exit with non-zero exit code to indicate failure
   }
 }
 
+// Call the formatHtml function
 formatHtml();
