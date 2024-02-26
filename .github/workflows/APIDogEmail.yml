@@ -30,7 +30,7 @@ jobs:
       - name: Run APIdog tests and generate HTML report
         run: |
           curl -o testArtifacts/apidog_report.html "https://api.apidog.com/api/v1/projects/455055/api-test/ci-config/349135/detail?token=xrwGYepeqT3Yx1KYguS0Pt" && \
-          apidog run https://api.apidog.com/api/v1/projects/455055/api-test/ci-config/349135/detail?token=xrwGYepeqT3Yx1KYguS0Pt -r cli
+          apidog run https://api.apidog.com/api/v1/projects/455055/api-test/ci-config/349135/detail?token=xrwGYepeqT3Yx1KYguS0Pt -r html cli
         
       - name: Output the results
         uses: actions/upload-artifact@v3
