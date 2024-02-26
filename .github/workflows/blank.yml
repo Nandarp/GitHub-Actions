@@ -21,7 +21,7 @@ jobs:
     - name: Run APIDog tests
       run: |
         mkdir -p testArtifacts  # Create the directory if it doesn't exist
-        apidog run --output testArtifacts/apidog_report.json run: apidog run https://api.apidog.com/api/v1/projects/455055/api-test/ci-config/349135/detail?token=xrwGYepeqT3Yx1KYguS0Pt -r html,cli
+        apidog run --output testArtifacts/apidog_report.json https://api.apidog.com/api/v1/projects/455055/api-test/ci-config/349135/detail?token=xrwGYepeqT3Yx1KYguS0Pt -r html,cli
 
     - name: Upload APIDog reports
       uses: actions/upload-artifact@v2
