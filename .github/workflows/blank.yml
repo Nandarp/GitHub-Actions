@@ -1,4 +1,4 @@
-name: Run APIdog Tests and Send Email
+name: APIdog Tests
 on: workflow_dispatch
   # push:
   #   branches:
