@@ -1,4 +1,4 @@
-name: SendGrid
+name: Run APIdog Tests and Send Email
  
 on: workflow_dispatch
   # push:
@@ -17,7 +17,7 @@ jobs:
         run: npm install @sendgrid/mail
         
       - name: Create testArtifacts directory
-        run: mkdir -p testArtifacts
+        run: mkdir TestArtifacts
         
       - name: Install Node.js
         uses: actions/setup-node@v2
@@ -30,22 +30,15 @@ jobs:
       - name: Run APIdog tests and generate HTML report
         run: |
           curl -o testArtifacts/apidog_report.html "https://api.apidog.com/api/v1/projects/455055/api-test/ci-config/349135/detail?token=xrwGYepeqT3Yx1KYguS0Pt" && \
-          apidog run https://api.apidog.com/api/v1/projects/455055/api-test/ci-config/349135/detail?token=xrwGYepeqT3Yx1KYguS0Pt -r html cli
-        
+          apidog run https://api.apidog.com/api/v1/projects/455055/api-test/ci-config/349135/detail?token=xrwGYepeqT3Yx1KYguS0Pt -r cli
+ 
       - name: Output the results
         uses: actions/upload-artifact@v3
         with: 
           name: Reports
           path: testArtifacts
-
-      - name: Send email with reports
-        uses: sendgrid/email-action@1.3.1
+      
+      - name: Send email with HTML report
+        run: node sendEmail.js
         env:
-          SENDGRID_API_KEY: ${{ secrets.SENDGRID_API_KEY }}  # SendGrid API key
-        with:
-          to: nandakumarap@anthology.com  # Email recipient
-          from: ivpnotifications@products.anthology.com  # Your email address
-          subject: Test Reports
-          text: Please find attached the test reports.
-          attachments: |
-            reports/*
+                SENDGRID_API_KEY: ${{ secrets.SENDGRID_API_KEY }}
