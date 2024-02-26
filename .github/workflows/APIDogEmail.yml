@@ -39,7 +39,7 @@ jobs:
           path: testArtifacts
 
       - name: Convert JSON to HTML        
-        run: node scripts/convertJsonToHtml.js
+        run: node convertJsonToHtml.js
 
       - name: Send email with HTML report
         run: node sendEmail.js
