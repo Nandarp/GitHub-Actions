@@ -34,7 +34,10 @@ jobs:
         with: 
           name: Reports
           path: testArtifacts
-          
+
+      - name: Convert JSON to HTML        
+        run: node convertJsonToHtml.js
+        
       - name: Send email with HTML report
         run: node sendEmail.js
         env:
