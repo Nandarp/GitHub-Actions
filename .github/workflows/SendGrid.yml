@@ -27,7 +27,7 @@ jobs:
       - name: Run APIdog tests and generate HTML report
         run: |
           curl -o testArtifacts/apidog_report.html "https://api.apidog.com/api/v1/projects/469204/api-test/ci-config/349543/detail?token=xdGMPHHcIsP80b1GLkpfHV" && \
-          apidog run https://api.apidog.com/api/v1/projects/469204/api-test/ci-config/349543/detail?token=xdGMPHHcIsP80b1GLkpfHV -r cli
+          apidog run https://api.apidog.com/api/v1/projects/469204/api-test/ci-config/349543/detail?token=xdGMPHHcIsP80b1GLkpfHV -r html,cli
       
       - name: Output the results
         uses: actions/upload-artifact@v3
@@ -35,8 +35,8 @@ jobs:
           name: Reports
           path: testArtifacts
 
-      - name: Convert JSON to HTML        
-        run: node convertJsonToHtml.js
+      # - name: Convert JSON to HTML        
+      #   run: node convertJsonToHtml.js
         
       - name: Send email with HTML report
         run: node sendEmail.js
