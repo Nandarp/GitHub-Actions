@@ -1,18 +1,15 @@
 name: Run APIdog Tests and Send Email
- 
 on: workflow_dispatch
   # push:
   #   branches:
   #     - main  # Trigger the workflow on pushes to the main branch
- 
 jobs:
   test_and_send_email:
     runs-on: ubuntu-latest
- 
     steps:
       - name: Checkout code
         uses: actions/checkout@v2
-
+        
       - name: Install SendGrid library
         run: npm install @sendgrid/mail
         
@@ -23,21 +20,21 @@ jobs:
         uses: actions/setup-node@v2
         with:
           node-version: '14'
- 
+          
       - name: Install APIdog CLI
         run: npm install -g apidog-cli
- 
+        
       - name: Run APIdog tests and generate HTML report
         run: |
-          curl -o testArtifacts/apidog_report.html "https://api.apidog.com/api/v1/projects/455055/api-test/ci-config/349135/detail?token=xrwGYepeqT3Yx1KYguS0Pt" && \
-          apidog run https://api.apidog.com/api/v1/projects/455055/api-test/ci-config/349135/detail?token=xrwGYepeqT3Yx1KYguS0Pt -r html cli
- 
+          curl -o testArtifacts/apidog_report.html "https://api.apidog.com/api/v1/projects/469204/api-test/ci-config/349543/detail?token=xdGMPHHcIsP80b1GLkpfHV" && \
+          apidog run https://api.apidog.com/api/v1/projects/469204/api-test/ci-config/349543/detail?token=xdGMPHHcIsP80b1GLkpfHV -r cli
+      
       - name: Output the results
         uses: actions/upload-artifact@v3
         with: 
           name: Reports
           path: testArtifacts
-      
+          
       - name: Send email with HTML report
         run: node sendEmail.js
         env:
