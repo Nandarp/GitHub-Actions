@@ -1,4 +1,4 @@
-name: Postman
+name: APIDog
 on: workflow_dispatch
 
 jobs:
