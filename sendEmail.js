@@ -6,10 +6,12 @@ const msg = {
   to: 'nandakumarap@anthology.com', // Change this to the recipient's email address
   from: 'ivpnotifications@products.anthology.com', // Change this to your verified sender email in SendGrid
   subject: 'APIdog Test Report',
-  text: 'Hi, Please find the attached APIdog test report.
-          
-          Thanks,
-          GitHub Actions',
+  text: `Hi,
+
+Please find the attached APIdog test report.
+
+Thanks,
+GitHub Actions`,
   attachments: [
     {
       content: htmlReport,
