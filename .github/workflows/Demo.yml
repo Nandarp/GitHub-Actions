@@ -1,11 +1,8 @@
-name: Demo Example
-
+name: Demo
 on: workflow_dispatch
-
 jobs:
   test_and_send_email:
     runs-on: ubuntu-latest
-    
     steps:
       - name: Checkout code
         uses: actions/checkout@v2
@@ -13,8 +10,8 @@ jobs:
       - name: Install SendGrid library
         run: npm install @sendgrid/mail
       
-      # - name: Create testArtifacts directory
-      #   run: mkdir -p testArtifacts
+      - name: Create testArtifacts directory
+        run: mkdir testArtifacts
       
       - name: Install Node.js
         uses: actions/setup-node@v2
@@ -26,7 +23,8 @@ jobs:
       
       - name: Run APIdog tests and generate HTML report
         run: |
-          apidog run https://api.apidog.com/api/v1/projects/455055/api-test/ci-config/349135/detail?token=xrwGYepeqT3Yx1KYguS0Pt -o testArtifacts/apidog_report.html
+          curl "https://api.apidog.com/api/v1/projects/455055/api-test/ci-config/349135/detail?token=xrwGYepeqT3Yx1KYguS0Pt" && \
+          apidog run https://api.apidog.com/api/v1/projects/455055/api-test/ci-config/349135/detail?token=xrwGYepeqT3Yx1KYguS0Pt html -o testArtifacts/apidog_report.html
       
       - name: Output the results
         uses: actions/upload-artifact@v3
