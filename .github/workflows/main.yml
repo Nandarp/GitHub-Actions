@@ -1,21 +1,23 @@
-name: Automated API Tests
+name: Run APIdog Tests
 
-on: [push, pull_request]
+on: [workflow_dispatch]
+  # push:
+  #   branches:
+  #     - main
+  # pull_request:
+  #   branches:
+  #     - main
 
 jobs:
-  build:
+  test:
     runs-on: ubuntu-latest
-
+    
     steps:
-    - uses: actions/checkout@v3
+    - name: Checkout code
+      uses: actions/checkout@v2
 
-    - name: Setup Node.js environment
-      uses: actions/setup-node@v2
-      with:
-        node-version: '14'
-
-    - name: Install Apidog CLI
+    - name: Install APIdog CLI
       run: npm install -g apidog-cli
 
-    - name: Running Test Scenario
-      run: apidog run https://api.apidog.com/api/v1/projects/455055/api-test/ci-config/349625/detail?token=xzC1s5iCjZgrLRXkg5iJt4 -r html,cli
+    - name: Run APIdog tests
+      run: apidog run https://api.apidog.com/api/v1/projects/123456/api-test/ci-config/789012/detail?token=YOUR_TOKEN -r cli,html
