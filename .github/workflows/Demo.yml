@@ -1,4 +1,4 @@
-name: Run APIdog Tests and Send Email
+name: Demo Example
 
 on: workflow_dispatch
 
@@ -13,8 +13,8 @@ jobs:
       - name: Install SendGrid library
         run: npm install @sendgrid/mail
       
-      - name: Create testArtifacts directory
-        run: mkdir testArtifacts
+      # - name: Create testArtifacts directory
+      #   run: mkdir -p testArtifacts
       
       - name: Install Node.js
         uses: actions/setup-node@v2
