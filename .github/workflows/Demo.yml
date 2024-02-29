@@ -10,8 +10,8 @@ jobs:
       - name: Install SendGrid library
         run: npm install @sendgrid/mail
       
-      - name: Create testArtifacts directory
-        run: mkdir testArtifacts
+      # - name: Create testArtifacts directory
+      #   run: mkdir testArtifacts
       
       - name: Install Node.js
         uses: actions/setup-node@v2
