@@ -1,5 +1,4 @@
 const fs = require('fs');
-const { resolve } = require('path');
 const sgMail = require('@sendgrid/mail');
 
 sgMail.setApiKey(process.env.SENDGRID_API_KEY);
@@ -14,7 +13,7 @@ async function sendEmailWithAttachment(senderEmail, receiverEmail, subject, html
             to: receiverEmail,
             from: senderEmail,
             subject: subject,
-            html: htmlReportContent,
+            html: '<p>Please find the HTML report attached.</p>',
             attachments: [
                 {
                     content: htmlReportContent,
@@ -34,9 +33,9 @@ async function sendEmailWithAttachment(senderEmail, receiverEmail, subject, html
 }
 
 // Example usage
-const senderEmail = 'ivpnotifications@products.anthology.com';
-const receiverEmail = 'nandakumarap@anthology.com';
+const senderEmail = 'nandakumarap@anthology.com';
+const receiverEmail = 'ivpnotifications@products.anthology.com';
 const subject = 'APIdog Test Report';
-const htmlReportPath = process.argv[2]; // Path to the HTML report passed as command-line argument
+const htmlReportPath = 'testArtifacts/apidog_report.html'; // Adjust the path as per your file structure
 
 sendEmailWithAttachment(senderEmail, receiverEmail, subject, htmlReportPath);
