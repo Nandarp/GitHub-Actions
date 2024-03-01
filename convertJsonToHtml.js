@@ -1,36 +1,26 @@
 const fs = require('fs');
- 
-// Read JSON report file
-#const jsonReportPath = process.env.GITHUB_WORKSPACE + '/apidog_report.json';
-const jsonReportPath = testArtifacts/apidog_report.json ;
-const reportData = JSON.parse(jsonReport);
- 
-// Generate HTML content
-let htmlContent = `
-<html>
-<head>
-<title>APIdog Test Report</title>
-</head>
-<body>
-<h1>APIdog Test Report</h1>
-<ul>
-`;
- 
-reportData.tests.forEach(test => {
-    htmlContent += `
-<li>
-<strong>${test.name}</strong>: ${test.status}
-</li>
-    `;
-});
- 
-htmlContent += `
-</ul>
-</body>
-</html>
-`;
- 
-// Write HTML report file
-fs.writeFileSync('testArtifacts/apidog_report.html', htmlContent);
- 
-console.log('HTML report generated successfully.');
+
+function convertJsonToHtml(jsonFilePath, htmlFilePath) {
+    try {
+        // Read JSON data from file
+        const jsonData = JSON.parse(fs.readFileSync(jsonFilePath, 'utf-8'));
+
+        // Convert JSON to HTML format
+        let htmlContent = '<html><head><title>APIdog Test Report</title></head><body>';
+        htmlContent += '<h1>APIdog Test Report</h1>';
+        htmlContent += '<pre>' + JSON.stringify(jsonData, null, 2) + '</pre>'; // Convert JSON to preformatted text
+        htmlContent += '</body></html>';
+
+        // Write HTML content to file
+        fs.writeFileSync(htmlFilePath, htmlContent);
+
+        console.log('JSON converted to HTML successfully.');
+    } catch (error) {
+        console.error('Error converting JSON to HTML:', error);
+    }
+}
+
+// Example usage
+const jsonFilePath = process.argv[2];
+const htmlFilePath = process.argv[3];
+convertJsonToHtml(jsonFilePath, htmlFilePath);
