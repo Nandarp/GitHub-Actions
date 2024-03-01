@@ -29,6 +29,6 @@ jobs:
           name: Reports
           path: testArtifacts
       - name: Send email with HTML report
-        run: node sendEmail.js
+        run: node sendEmail.js testArtifacts/apidog_report.html
         env:
                 SENDGRID_API_KEY: ${{ secrets.SENDGRID_API_KEY }}
