@@ -8,6 +8,9 @@ async function sendEmailWithAttachment(senderEmail, receiverEmail, subject, html
         // Read the HTML report
         const htmlReportContent = fs.readFileSync(htmlReportPath, 'utf-8');
 
+        // Encode the HTML report content as base64
+        const base64Content = Buffer.from(htmlReportContent).toString('base64');
+
         // Create the email
         const msg = {
             to: receiverEmail,
@@ -16,7 +19,7 @@ async function sendEmailWithAttachment(senderEmail, receiverEmail, subject, html
             html: '<p>Please find the HTML report attached.</p>',
             attachments: [
                 {
-                    content: htmlReportContent,
+                    content: base64Content,
                     filename: 'apidog_report.html',
                     type: 'text/html',
                     disposition: 'attachment',
