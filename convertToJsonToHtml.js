@@ -32,6 +32,7 @@ function generateHtmlReport(jsonData) {
                     <th>Name</th>
                     <th>Request Method</th>
                     <th>Request URL</th>
+                    <th>Response Body</th>
                 </tr>
             </thead>
             <tbody>
@@ -39,12 +40,14 @@ function generateHtmlReport(jsonData) {
 
     jsonData.item.forEach(item => {
         item.item.forEach(subItem => {
+            const responseBody = subItem.response && subItem.response.body ? JSON.stringify(subItem.response.body) : '';
             htmlContent += `
                 <tr>
                     <td>${subItem.id}</td>
                     <td>${subItem.name}</td>
                     <td>${subItem.request.method}</td>
                     <td>${subItem.request.url.protocol}://${subItem.request.url.host.join('/')}${subItem.request.url.path.join('/')}</td>
+                    <td>${responseBody}</td>
                 </tr>
             `;
         });
@@ -73,11 +76,20 @@ function convertJsonToHtml(jsonFilePath, htmlFilePath) {
 
         console.log('JSON converted to HTML successfully.');
     } catch (error) {
-        console.error('Error converting JSON to HTML:', error);
+        console.error('Error converting JSON to HTML:', error.message);
     }
 }
 
-// Example usage
-const jsonFilePath = process.argv[2];
-const htmlFilePath = process.argv[3];
+// Parse command-line arguments
+const args = process.argv.slice(2);
+if (args.length !== 2) {
+    console.error('Usage: node convertToJsonToHtml.js <input.json> <output.html>');
+    process.exit(1);
+}
+
+// Extract file paths from command-line arguments
+const jsonFilePath = args[0];
+const htmlFilePath = args[1];
+
+// Convert JSON to HTML
 convertJsonToHtml(jsonFilePath, htmlFilePath);
