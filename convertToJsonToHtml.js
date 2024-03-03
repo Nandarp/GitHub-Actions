@@ -8,7 +8,14 @@ function convertJsonToHtml(jsonFilePath, htmlFilePath) {
         // Convert JSON to HTML format
         let htmlContent = '<html><head><title>APIdog Test Report</title></head><body>';
         htmlContent += '<h1>APIdog Test Report</h1>';
-        htmlContent += '<pre>' + JSON.stringify(jsonData, null, 2) + '</pre>'; // Convert JSON to preformatted text
+        htmlContent += '<table border="1">';
+        htmlContent += '<tr><th>ID</th><th>Name</th><th>Request Method</th><th>Request URL</th></tr>';
+        jsonData.item.forEach(item => {
+            item.item.forEach(subItem => {
+                htmlContent += `<tr><td>${subItem.id}</td><td>${subItem.name}</td><td>${subItem.request.method}</td><td>${subItem.request.url.protocol}://${subItem.request.url.host.join('/')}${subItem.request.url.path.join('/')}</td></tr>`;
+            });
+        });
+        htmlContent += '</table>';
         htmlContent += '</body></html>';
 
         // Write HTML content to file
