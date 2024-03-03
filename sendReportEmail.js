@@ -8,28 +8,42 @@ async function sendEmailWithAttachment(senderEmail, receiverEmail, subject, html
         // Read the HTML report
         const htmlReportContent = fs.readFileSync(htmlReportPath, 'utf-8');
 
-        // Calculate overall execution summary
-        const totalTestCases = htmlReportContent.match(/<tr/g).length - 1; // Subtract 1 for the header row
-        const passedTestCases = (htmlReportContent.match(/<td>Passed<\/td>/g) || []).length;
-        const failedTestCases = (htmlReportContent.match(/<td>Failed<\/td>/g) || []).length;
-        const pendingTestCases = (htmlReportContent.match(/<td>Pending<\/td>/g) || []).length;
+        // Read the JSON report
+        const jsonReportContent = fs.readFileSync('testArtifacts/apidog_report.json', 'utf-8');
+        const jsonData = JSON.parse(jsonReportContent);
+
+        // Extract detailed execution summary from the JSON report
+        const executionSummary = jsonData.item.map(testItem => {
+            const testName = testItem.name;
+            const requestMethod = testItem.request.method;
+            const requestUrl = testItem.request.url.protocol + "://" + testItem.request.url.host.join("/") + "/" + testItem.request.url.path.join("/");
+            const responseCode = testItem.response.length > 0 ? testItem.response[0].code : 'N/A';
+            return `<tr><td>${testName}</td><td>${requestMethod}</td><td>${requestUrl}</td><td>${responseCode}</td></tr>`;
+        }).join('');
 
         // Generate overall execution summary
-        const summary = `
-            <p>Total Test Cases: ${totalTestCases}</p>
-            <p>Passed: ${passedTestCases}</p>
-            <p>Failed: ${failedTestCases}</p>
-            <p>Pending: ${pendingTestCases}</p>
-        `;
-
-        // Encode the HTML report content as base64
-        const base64Content = Buffer.from(htmlReportContent).toString('base64');
+        const totalTestCases = jsonData.item.length;
+        const passedTestCases = jsonData.item.filter(testItem => testItem.response.length > 0 && testItem.response[0].code === 200).length;
+        const failedTestCases = totalTestCases - passedTestCases;
 
         // Create the email body with the HTML report attached
         const emailBody = `
             <p>Hi team,</p>
             <p>Please find report for the latest APIdog test execution attached.</p>
-            ${summary}
+            <p>Detailed Execution Summary:</p>
+            <table>
+                <tr>
+                    <th>Test Case Name</th>
+                    <th>Request Method</th>
+                    <th>Request URL</th>
+                    <th>Response Code</th>
+                </tr>
+                ${executionSummary}
+            </table>
+            <p>Overall Execution Summary:</p>
+            <p>Total Test Cases: ${totalTestCases}</p>
+            <p>Passed: ${passedTestCases}</p>
+            <p>Failed: ${failedTestCases}</p>
             <p>Regards,<br>GitHub Actions</p>
         `;
 
@@ -41,7 +55,7 @@ async function sendEmailWithAttachment(senderEmail, receiverEmail, subject, html
             html: emailBody,
             attachments: [
                 {
-                    content: base64Content,
+                    content: Buffer.from(htmlReportContent).toString('base64'),
                     filename: 'apidog_report.html',
                     type: 'text/html',
                     disposition: 'attachment',
