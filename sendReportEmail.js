@@ -8,21 +8,28 @@ async function sendEmailWithAttachment(senderEmail, receiverEmail, subject, html
         // Read the HTML report
         const htmlReportContent = fs.readFileSync(htmlReportPath, 'utf-8');
 
+        // Calculate overall execution summary
+        const totalTestCases = htmlReportContent.match(/<tr/g).length - 1; // Subtract 1 for the header row
+        const passedTestCases = (htmlReportContent.match(/<td>Passed<\/td>/g) || []).length;
+        const failedTestCases = (htmlReportContent.match(/<td>Failed<\/td>/g) || []).length;
+        const pendingTestCases = (htmlReportContent.match(/<td>Pending<\/td>/g) || []).length;
+
+        // Generate overall execution summary
+        const summary = `
+            <p>Total Test Cases: ${totalTestCases}</p>
+            <p>Passed: ${passedTestCases}</p>
+            <p>Failed: ${failedTestCases}</p>
+            <p>Pending: ${pendingTestCases}</p>
+        `;
+
         // Encode the HTML report content as base64
         const base64Content = Buffer.from(htmlReportContent).toString('base64');
-
-        // Generate a unique filename for the report
-        const timestamp = new Date().toISOString().replace(/:/g, '-');
-        const reportFilename = `apidog_report_${timestamp}.html`;
-
-        // Save the report with the unique filename in the testArtifacts folder
-        const reportPath = `testArtifacts/${reportFilename}`;
-        fs.writeFileSync(reportPath, htmlReportContent, 'utf-8');
 
         // Create the email body with the HTML report attached
         const emailBody = `
             <p>Hi team,</p>
             <p>Please find report for the latest APIdog test execution attached.</p>
+            ${summary}
             <p>Regards,<br>GitHub Actions</p>
         `;
 
@@ -35,7 +42,7 @@ async function sendEmailWithAttachment(senderEmail, receiverEmail, subject, html
             attachments: [
                 {
                     content: base64Content,
-                    filename: reportFilename,
+                    filename: 'apidog_report.html',
                     type: 'text/html',
                     disposition: 'attachment',
                 },
