@@ -27,7 +27,7 @@ jobs:
         uses: actions/upload-artifact@v3
         with: 
           name: Reports
-          path: testArtifacts
+          path: testArtifacts/*/
       - name: Send email with HTML report
         run: node sendEmail.js ${{ github.workspace }}/testArtifacts/apidog_report.html
         env:
