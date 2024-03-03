@@ -31,7 +31,8 @@ jobs:
         run: npm install -g newman
       
       - name: Generate HTML report
-        run: newman report testArtifacts/apidog_report.json --reporter-html-export testArtifacts/apidog_report.html
+        run: newman run testArtifacts/apidog_report.json --reporter-html --reporter-html-export testArtifacts/apidog_report.html
+
 
       - name: Output the results
         uses: actions/upload-artifact@v3
