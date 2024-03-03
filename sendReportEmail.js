@@ -17,13 +17,13 @@ async function sendEmailWithAttachment(senderEmail, receiverEmail, subject, html
             const testName = testItem.name;
             const requestMethod = testItem.request ? testItem.request.method : 'N/A';
             const requestUrl = testItem.request ? testItem.request.url.protocol + "://" + testItem.request.url.host.join("/") + "/" + testItem.request.url.path.join("/") : 'N/A';
-            const responseCode = testItem.response.length > 0 ? testItem.response[0].code : 'N/A';
+            const responseCode = testItem.response && testItem.response.length > 0 ? testItem.response[0].code : 'N/A';
             return `<tr><td>${testName}</td><td>${requestMethod}</td><td>${requestUrl}</td><td>${responseCode}</td></tr>`;
         }).join('');
 
         // Generate overall execution summary
         const totalTestCases = jsonData.item.length;
-        const passedTestCases = jsonData.item.filter(testItem => testItem.response.length > 0 && testItem.response[0].code === 200).length;
+        const passedTestCases = jsonData.item.filter(testItem => testItem.response && testItem.response.length > 0 && testItem.response[0].code === 200).length;
         const failedTestCases = totalTestCases - passedTestCases;
 
         // Create the email body with the HTML report attached
@@ -67,14 +67,4 @@ async function sendEmailWithAttachment(senderEmail, receiverEmail, subject, html
         await sgMail.send(msg);
         console.log('Email sent successfully.');
     } catch (error) {
-        console.error('Error sending email:', error);
-    }
-}
-
-// Example usage
-const senderEmail = 'ivpnotifications@products.anthology.com';
-const receiverEmail = 'nandakumarap@anthology.com';
-const subject = 'APIdog Test Report';
-const htmlReportPath = 'testArtifacts/apidog_report.html'; // Adjust the path as per your file structure
-
-sendEmailWithAttachment(senderEmail, receiverEmail, subject, htmlReportPath);
+        console.error('Error sending email:', erro
