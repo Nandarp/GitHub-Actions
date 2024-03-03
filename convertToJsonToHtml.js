@@ -36,15 +36,27 @@ function generateHtmlReport(jsonData) {
             <tbody>
     `;
 
-    jsonData.forEach(testCase => {
+    if (Array.isArray(jsonData)) {
+        // If jsonData is an array, assume it contains multiple test cases
+        jsonData.forEach(testCase => {
+            htmlContent += `
+                <tr>
+                    <td>${testCase.name}</td>
+                    <td>${testCase.status}</td>
+                    <td>${testCase.errorMessage || '-'}</td>
+                </tr>
+            `;
+        });
+    } else {
+        // If jsonData is not an array, treat it as a single test case result
         htmlContent += `
             <tr>
-                <td>${testCase.name}</td>
-                <td>${testCase.status}</td>
-                <td>${testCase.errorMessage || '-'}</td>
+                <td>${jsonData.name}</td>
+                <td>${jsonData.status}</td>
+                <td>${jsonData.errorMessage || '-'}</td>
             </tr>
         `;
-    });
+    }
 
     htmlContent += `
             </tbody>
