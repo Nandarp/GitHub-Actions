@@ -28,7 +28,7 @@ jobs:
           apidog run https://api.apidog.com/api/v1/projects/455055/api-test/ci-config/349135/detail?token=xrwGYepeqT3Yx1KYguS0Pt -r cli
       
       - name: Convert JSON to HTML
-        run: node convertToJsonToHtml.js testArtifacts/apidog_report.json testArtifacts/apidog_report.html
+        run: node convertToJsonToHtml.js input.json output.html
       
       - name: Output the results
         uses: actions/upload-artifact@v3
