@@ -1,6 +1,5 @@
 name: Run APIdog Tests and Send email
-on: 
-  workflow_dispatch
+on: workflow_dispatch
 
 jobs:
   test_and_send_email:
@@ -18,7 +17,7 @@ jobs:
       - name: Install Node.js
         uses: actions/setup-node@v2
         with:
-          node-version: '20'  # Ensure Node.js version is compatible with the scripts
+          node-version: '20'
       
       - name: Install APIdog CLI
         run: npm install -g apidog-cli
@@ -28,16 +27,19 @@ jobs:
           curl -o testArtifacts/apidog_report.json "https://api.apidog.com/api/v1/projects/455055/api-test/ci-config/349135/detail?token=xrwGYepeqT3Yx1KYguS0Pt" && \
           apidog run https://api.apidog.com/api/v1/projects/455055/api-test/ci-config/349135/detail?token=xrwGYepeqT3Yx1KYguS0Pt -r cli
       
-      - name: Convert JSON to HTML
-        run: node convertToJsonToHtml.js testArtifacts/apidog_report.json testArtifacts/apidog_report.html
+      - name: Install Newman
+        run: npm install -g newman
+      
+      - name: Generate HTML report
+        run: newman report testArtifacts/apidog_report.json --reporter-html-export testArtifacts/apidog_report.html
 
+      - name: Output the results
+        uses: actions/upload-artifact@v3
+        with: 
+          name: Reports
+          path: testArtifacts
+      
       - name: Send email with HTML report
         run: node sendReportEmail.js
         env:
           SENDGRID_API_KEY: ${{ secrets.SENDGRID_API_KEY }}
-      
-      - name: Upload Artifact
-        uses: actions/upload-artifact@v3
-        with:
-          name: reports
-          path: testArtifacts/*
