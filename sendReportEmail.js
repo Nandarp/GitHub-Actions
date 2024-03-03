@@ -15,8 +15,8 @@ async function sendEmailWithAttachment(senderEmail, receiverEmail, subject, html
         // Extract detailed execution summary from the JSON report
         const executionSummary = jsonData.item.map(testItem => {
             const testName = testItem.name;
-            const requestMethod = testItem.request.method;
-            const requestUrl = testItem.request.url.protocol + "://" + testItem.request.url.host.join("/") + "/" + testItem.request.url.path.join("/");
+            const requestMethod = testItem.request ? testItem.request.method : 'N/A';
+            const requestUrl = testItem.request ? testItem.request.url.protocol + "://" + testItem.request.url.host.join("/") + "/" + testItem.request.url.path.join("/") : 'N/A';
             const responseCode = testItem.response.length > 0 ? testItem.response[0].code : 'N/A';
             return `<tr><td>${testName}</td><td>${requestMethod}</td><td>${requestUrl}</td><td>${responseCode}</td></tr>`;
         }).join('');
