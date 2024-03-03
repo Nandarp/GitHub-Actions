@@ -1,34 +1,43 @@
-name: Run APIdog Tests and Send Email
-on: workflow_dispatch
-  # push:
-  #   branches:
-  #     - main  # Trigger the workflow on pushes to the main branch
+name: Run APIdog Tests and Send email
+on: 
+  workflow_dispatch
+
 jobs:
   test_and_send_email:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout code
         uses: actions/checkout@v2
+      
       - name: Install SendGrid library
         run: npm install @sendgrid/mail
+      
       - name: Create testArtifacts directory
         run: mkdir TestArtifacts
+      
       - name: Install Node.js
         uses: actions/setup-node@v2
         with:
-          node-version: '14'
+          node-version: '20'  # Ensure Node.js version is compatible with the scripts
+      
       - name: Install APIdog CLI
         run: npm install -g apidog-cli
-      - name: Run APIdog tests and generate HTML report
+      
+      - name: Run APIdog tests and generate JSON report
         run: |
-          curl -o testArtifacts/apidog_report.html "https://api.apidog.com/api/v1/projects/469204/api-test/ci-config/349543/detail?token=xdGMPHHcIsP80b1GLkpfHV" && \
-          apidog run https://api.apidog.com/api/v1/projects/469204/api-test/ci-config/349543/detail?token=xdGMPHHcIsP80b1GLkpfHV -r cli
-      - name: Output the results
-        uses: actions/upload-artifact@v3
-        with: 
-          name: Reports
-          path: testArtifacts/*/
+          curl -o testArtifacts/apidog_report.json "https://api.apidog.com/api/v1/projects/455055/api-test/ci-config/349135/detail?token=xrwGYepeqT3Yx1KYguS0Pt" && \
+          apidog run https://api.apidog.com/api/v1/projects/455055/api-test/ci-config/349135/detail?token=xrwGYepeqT3Yx1KYguS0Pt -r cli
+      
+      - name: Convert JSON to HTML
+        run: node convertToJsonToHtml.js testArtifacts/apidog_report.json testArtifacts/apidog_report.html
+
       - name: Send email with HTML report
-        run: node sendEmail.js ${{ github.workspace }}/testArtifacts/apidog_report.html
+        run: node sendReportEmail.js
         env:
-                SENDGRID_API_KEY: ${{ secrets.SENDGRID_API_KEY }}
+          SENDGRID_API_KEY: ${{ secrets.SENDGRID_API_KEY }}
+      
+      - name: Upload Artifact
+        uses: actions/upload-artifact@v3
+        with:
+          name: reports
+          path: ${{ github.workspace }}/TestArtifacts
