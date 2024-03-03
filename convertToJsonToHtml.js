@@ -7,7 +7,7 @@ function generateHtmlReport(jsonData) {
     <head>
         <meta charset="UTF-8">
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
-        <title>APIdog Test Report</title>
+        <title>API Test Cases Report</title>
         <style>
             table {
                 width: 100%;
@@ -24,42 +24,26 @@ function generateHtmlReport(jsonData) {
         </style>
     </head>
     <body>
-        <h1>APIdog Test Report</h1>
+        <h1>API Test Cases Report</h1>
         <table>
             <thead>
                 <tr>
-                    <th>ID</th>
-                    <th>Name</th>
-                    <th>Request Method</th>
-                    <th>Request URL</th>
-                    <th>Request Headers</th>
-                    <th>Response Status Code</th>
-                    <th>Response Headers</th>
-                    <th>Response Body</th>
+                    <th>Test Case Name</th>
+                    <th>Status</th>
+                    <th>Error Message</th>
                 </tr>
             </thead>
             <tbody>
     `;
 
-    jsonData.item.forEach(item => {
-        item.item.forEach(subItem => {
-            const responseBody = subItem.response && subItem.response.body ? JSON.stringify(subItem.response.body) : '';
-            const requestHeaders = subItem.request && subItem.request.header ? JSON.stringify(subItem.request.header) : '';
-            const responseCode = subItem.response && subItem.response.code ? subItem.response.code : '';
-            const responseHeaders = subItem.response && subItem.response.header ? JSON.stringify(subItem.response.header) : '';
-            htmlContent += `
-                <tr>
-                    <td>${subItem.id}</td>
-                    <td>${subItem.name}</td>
-                    <td>${subItem.request.method}</td>
-                    <td>${subItem.request.url.protocol}://${subItem.request.url.host.join('/')}${subItem.request.url.path.join('/')}</td>
-                    <td>${requestHeaders}</td>
-                    <td>${responseCode}</td>
-                    <td>${responseHeaders}</td>
-                    <td>${responseBody}</td>
-                </tr>
-            `;
-        });
+    jsonData.forEach(testCase => {
+        htmlContent += `
+            <tr>
+                <td>${testCase.name}</td>
+                <td>${testCase.status}</td>
+                <td>${testCase.errorMessage || '-'}</td>
+            </tr>
+        `;
     });
 
     htmlContent += `
@@ -92,7 +76,7 @@ function convertJsonToHtml(jsonFilePath, htmlFilePath) {
 // Parse command-line arguments
 const args = process.argv.slice(2);
 if (args.length !== 2) {
-    console.error('Usage: node convertToJsonToHtml.js <input.json> <output.html>');
+    console.error('Usage: node convertJsonToHtml.js <input.json> <output.html>');
     process.exit(1);
 }
 
