@@ -11,11 +11,18 @@ async function sendEmailWithAttachment(senderEmail, receiverEmail, subject, html
         // Encode the HTML report content as base64
         const base64Content = Buffer.from(htmlReportContent).toString('base64');
 
+        // Generate a unique filename for the report
+        const timestamp = new Date().toISOString().replace(/:/g, '-');
+        const reportFilename = `apidog_report_${timestamp}.html`;
+
+        // Save the report with the unique filename in the testArtifacts folder
+        const reportPath = `testArtifacts/${reportFilename}`;
+        fs.writeFileSync(reportPath, htmlReportContent, 'utf-8');
+
         // Create the email body with the HTML report attached
         const emailBody = `
             <p>Hi team,</p>
             <p>Please find report for the latest APIdog test execution attached.</p>
-            <p></p>
             <p>Regards,<br>GitHub Actions</p>
         `;
 
@@ -28,7 +35,7 @@ async function sendEmailWithAttachment(senderEmail, receiverEmail, subject, html
             attachments: [
                 {
                     content: base64Content,
-                    filename: 'apidog_report.html',
+                    filename: reportFilename,
                     type: 'text/html',
                     disposition: 'attachment',
                 },
