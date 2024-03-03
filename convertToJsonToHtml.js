@@ -45,6 +45,7 @@ function generateHtmlReport(jsonData) {
         item.item.forEach(subItem => {
             const responseBody = subItem.response && subItem.response.body ? JSON.stringify(subItem.response.body) : '';
             const requestHeaders = subItem.request && subItem.request.header ? JSON.stringify(subItem.request.header) : '';
+            const responseCode = subItem.response && subItem.response.code ? subItem.response.code : '';
             const responseHeaders = subItem.response && subItem.response.header ? JSON.stringify(subItem.response.header) : '';
             htmlContent += `
                 <tr>
@@ -53,7 +54,7 @@ function generateHtmlReport(jsonData) {
                     <td>${subItem.request.method}</td>
                     <td>${subItem.request.url.protocol}://${subItem.request.url.host.join('/')}${subItem.request.url.path.join('/')}</td>
                     <td>${requestHeaders}</td>
-                    <td>${subItem.response.code || ''}</td>
+                    <td>${responseCode}</td>
                     <td>${responseHeaders}</td>
                     <td>${responseBody}</td>
                 </tr>
