@@ -11,12 +11,20 @@ async function sendEmailWithAttachment(senderEmail, receiverEmail, subject, html
         // Encode the HTML report content as base64
         const base64Content = Buffer.from(htmlReportContent).toString('base64');
 
+        // Create the email body with the HTML report attached
+        const emailBody = `
+            <p>Hi team,</p>
+            <p>Please find report for the latest APIdog test execution attached.</p>
+            <p></p>
+            <p>Regards,<br>GitHub Actions</p>
+        `;
+
         // Create the email
         const msg = {
             to: receiverEmail,
             from: senderEmail,
             subject: subject,
-            html: '<p>Please find the HTML report attached.</p>',
+            html: emailBody,
             attachments: [
                 {
                     content: base64Content,
