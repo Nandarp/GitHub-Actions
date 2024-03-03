@@ -67,4 +67,14 @@ async function sendEmailWithAttachment(senderEmail, receiverEmail, subject, html
         await sgMail.send(msg);
         console.log('Email sent successfully.');
     } catch (error) {
-        console.error('Error sending email:', erro
+        console.error('Error sending email:', error);
+    }
+}
+
+// Example usage
+const senderEmail = 'your-email@example.com';
+const receiverEmail = 'recipient-email@example.com';
+const subject = 'APIdog Test Report';
+const htmlReportPath = 'testArtifacts/apidog_report.html'; // Adjust the path as per your file structure
+
+sendEmailWithAttachment(senderEmail, receiverEmail, subject, htmlReportPath);
