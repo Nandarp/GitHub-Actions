@@ -72,8 +72,8 @@ async function sendEmailWithAttachment(senderEmail, receiverEmail, subject, html
 }
 
 // Example usage
-const senderEmail = 'your-email@example.com';
-const receiverEmail = 'recipient-email@example.com';
+const senderEmail = 'ivpnotifications@products.anthology.com';
+const receiverEmail = 'nandakumarap@anthology.com';
 const subject = 'APIdog Test Report';
 const htmlReportPath = 'testArtifacts/apidog_report.html'; // Adjust the path as per your file structure
 
