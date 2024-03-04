@@ -39,6 +39,7 @@ function convertJsonToHtml(jsonFilePath, htmlFilePath) {
                         <th>Request Method</th>
                         <th>Request URL</th>
                         <th>Response Code</th>
+                        <th>Response Body</th>
                     </tr>
         `;
 
@@ -48,6 +49,7 @@ function convertJsonToHtml(jsonFilePath, htmlFilePath) {
             const requestMethod = testItem.request ? testItem.request.method : 'N/A';
             const requestUrl = testItem.request ? testItem.request.url.protocol + "://" + testItem.request.url.host.join("/") + "/" + testItem.request.url.path.join("/") : 'N/A';
             const responseCode = testItem.response && testItem.response.length > 0 ? testItem.response[0].code : 'N/A';
+            const responseBody = testItem.response && testItem.response.length > 0 ? JSON.stringify(testItem.response[0].body) : 'N/A';
 
             htmlContent += `
                 <tr>
@@ -55,6 +57,7 @@ function convertJsonToHtml(jsonFilePath, htmlFilePath) {
                     <td>${requestMethod}</td>
                     <td>${requestUrl}</td>
                     <td>${responseCode}</td>
+                    <td>${responseBody}</td>
                 </tr>
             `;
         });
