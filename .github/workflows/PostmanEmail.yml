@@ -1,5 +1,7 @@
-name: Send Email
-on: workflow_dispatch
+name: Run APIdog Tests
+
+on: 
+  workflow_dispatch:
 
 jobs:
   test_and_send_email:
@@ -17,19 +19,30 @@ jobs:
       - name: Install Node.js
         uses: actions/setup-node@v2
         with:
-          node-version: '20'
+          node-version: '14'  # Change the version as per your requirement
       
       - name: Install APIdog CLI
         run: npm install -g apidog-cli
       
       - name: Run APIdog tests and generate JSON report
         run: |
-          curl -o testArtifacts/apidog_report.json "https://api.apidog.com/api/v1/projects/455055/api-test/ci-config/349135/detail?token=xrwGYepeqT3Yx1KYguS0Pt" && \
-          apidog run https://api.apidog.com/api/v1/projects/455055/api-test/ci-config/349135/detail?token=xrwGYepeqT3Yx1KYguS0Pt -r cli
+          curl -o testArtifacts/apidog_report.json "https://api.apidog.com/api/v1/projects/455055/api-test/ci-config/349135/detail?token=" && \
+          apidog run https://api.apidog.com/api/v1/projects/455055/api-test/ci-config/349135/detail?token=-r cli
       
       - name: Convert JSON to HTML
-        run: node convertToJsonToHtml.js testArtifacts/apidog_report.json testArtifacts/apidog_report.html
+        run: |
+          const fs = require('fs');
 
+          // Read the JSON report
+          const jsonReportContent = fs.readFileSync('testArtifacts/apidog_report.json', 'utf-8');
+          const jsonData = JSON.parse(jsonReportContent);
+
+          // Convert JSON data to HTML format
+          const htmlContent = `<html><body><pre>${JSON.stringify(jsonData, null, 2)}</pre></body></html>`;
+
+          // Save the HTML content to a file
+          fs.writeFileSync('testArtifacts/apidog_report.html', htmlContent);
+      
       - name: Output the results
         uses: actions/upload-artifact@v3
         with: 
@@ -37,6 +50,47 @@ jobs:
           path: testArtifacts/*
       
       - name: Send email with HTML report
-        run: node sendReportEmail.js
+        run: |
+          const fs = require('fs');
+          const sgMail = require('@sendgrid/mail');
+
+          sgMail.setApiKey(process.env.SENDGRID_API_KEY);
+
+          async function sendEmailWithAttachment(senderEmail, receiverEmail, subject, htmlReportPath) {
+              try {
+                  // Read the HTML report
+                  const htmlReportContent = fs.readFileSync(htmlReportPath, 'utf-8');
+
+                  // Create the email
+                  const msg = {
+                      to: receiverEmail,
+                      from: senderEmail,
+                      subject: subject,
+                      html: `<p>Please find report for the latest APIdog test execution attached.</p>${htmlReportContent}`,
+                      attachments: [
+                          {
+                              content: Buffer.from(htmlReportContent).toString('base64'),
+                              filename: 'apidog_report.html',
+                              type: 'text/html',
+                              disposition: 'attachment',
+                          },
+                      ],
+                  };
+
+                  // Send the email
+                  await sgMail.send(msg);
+                  console.log('Email sent successfully.');
+              } catch (error) {
+                  console.error('Error sending email:', error);
+              }
+          }
+
+          // Example usage
+          const senderEmail = 'ivpnotifications@products.anthology.com';
+          const receiverEmail = 'nandakumarap@anthology.com';
+          const subject = 'APIdog Test Report';
+          const htmlReportPath = 'testArtifacts/apidog_report.html'; // Adjust the path as per your file structure
+
+          sendEmailWithAttachment(senderEmail, receiverEmail, subject, htmlReportPath);
         env:
           SENDGRID_API_KEY: ${{ secrets.SENDGRID_API_KEY }}
