@@ -13,18 +13,29 @@ async function sendEmailWithAttachment(senderEmail, receiverEmail, subject, html
         const jsonData = JSON.parse(jsonReportContent);
 
         // Extract detailed execution summary from the JSON report
-        const executionSummary = jsonData.item.map(testItem => {
+        const executionDetails = jsonData.item.map(testItem => {
             const testName = testItem.name;
             const requestMethod = testItem.request ? testItem.request.method : 'N/A';
             const requestUrl = testItem.request ? testItem.request.url.protocol + "://" + testItem.request.url.host.join("/") + "/" + testItem.request.url.path.join("/") : 'N/A';
+            const requestHeaders = testItem.request && testItem.request.header ? JSON.stringify(testItem.request.header) : 'N/A';
+            const requestBody = testItem.request && testItem.request.body ? JSON.stringify(testItem.request.body) : 'N/A';
             const responseCode = testItem.response && testItem.response.length > 0 ? testItem.response[0].code : 'N/A';
-            return `<tr><td>${testName}</td><td>${requestMethod}</td><td>${requestUrl}</td><td>${responseCode}</td></tr>`;
-        }).join('');
+            const responseHeaders = testItem.response && testItem.response.length > 0 && testItem.response[0].header ? JSON.stringify(testItem.response[0].header) : 'N/A';
+            const responseBody = testItem.response && testItem.response.length > 0 && testItem.response[0].body ? JSON.stringify(testItem.response[0].body) : 'N/A';
 
-        // Generate overall execution summary
-        const totalTestCases = jsonData.item.length;
-        const passedTestCases = jsonData.item.filter(testItem => testItem.response && testItem.response.length > 0 && testItem.response[0].code === 200).length;
-        const failedTestCases = totalTestCases - passedTestCases;
+            return `
+                <tr>
+                    <td>${testName}</td>
+                    <td>${requestMethod}</td>
+                    <td>${requestUrl}</td>
+                    <td>${requestHeaders}</td>
+                    <td>${requestBody}</td>
+                    <td>${responseCode}</td>
+                    <td>${responseHeaders}</td>
+                    <td>${responseBody}</td>
+                </tr>
+            `;
+        }).join('');
 
         // Create the email body with the HTML report attached
         const emailBody = `
@@ -36,14 +47,14 @@ async function sendEmailWithAttachment(senderEmail, receiverEmail, subject, html
                     <th>Test Case Name</th>
                     <th>Request Method</th>
                     <th>Request URL</th>
+                    <th>Request Headers</th>
+                    <th>Request Body</th>
                     <th>Response Code</th>
+                    <th>Response Headers</th>
+                    <th>Response Body</th>
                 </tr>
-                ${executionSummary}
+                ${executionDetails}
             </table>
-            <p>Overall Execution Summary:</p>
-            <p>Total Test Cases: ${totalTestCases}</p>
-            <p>Passed: ${passedTestCases}</p>
-            <p>Failed: ${failedTestCases}</p>
             <p>Regards,<br>GitHub Actions</p>
         `;
 
