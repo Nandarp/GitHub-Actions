@@ -1,104 +1,82 @@
 const fs = require('fs');
 
-function generateHtmlReport(jsonData) {
-    let htmlContent = `
-    <!DOCTYPE html>
-    <html lang="en">
-    <head>
-        <meta charset="UTF-8">
-        <meta name="viewport" content="width=device-width, initial-scale=1.0">
-        <title>APIdog Test Report</title>
-        <style>
-            table {
-                width: 100%;
-                border-collapse: collapse;
-            }
-            th, td {
-                padding: 8px;
-                border: 1px solid #ddd;
-                text-align: left;
-            }
-            th {
-                background-color: #f2f2f2;
-            }
-        </style>
-    </head>
-    <body>
-        <h1>APIdog Test Report</h1>
-        <table>
-            <thead>
-                <tr>
-                    <th>ID</th>
-                    <th>Name</th>
-                    <th>Request Method</th>
-                    <th>Request URL</th>
-                    <th>Request Headers</th>
-                    <th>Response Status Code</th>
-                    <th>Response Headers</th>
-                    <th>Response Body</th>
-                </tr>
-            </thead>
-            <tbody>
-    `;
+function convertJsonToHtml(jsonFilePath, htmlFilePath) {
+    try {
+        // Read the JSON report file
+        const jsonData = JSON.parse(fs.readFileSync(jsonFilePath, 'utf-8'));
 
-    jsonData.item.forEach(item => {
-        item.item.forEach(subItem => {
-            const responseBody = subItem.response && subItem.response.body ? JSON.stringify(subItem.response.body) : '';
-            const requestHeaders = subItem.request && subItem.request.header ? JSON.stringify(subItem.request.header) : '';
-            const responseCode = subItem.response && subItem.response.code ? subItem.response.code : '';
-            const responseHeaders = subItem.response && subItem.response.header ? JSON.stringify(subItem.response.header) : '';
+        // Create HTML content
+        let htmlContent = `
+            <!DOCTYPE html>
+            <html>
+            <head>
+                <style>
+                    /* Add your CSS styles here */
+                    table {
+                        border-collapse: collapse;
+                        width: 100%;
+                    }
+                    th, td {
+                        border: 1px solid black;
+                        padding: 8px;
+                        text-align: left;
+                    }
+                    th {
+                        background-color: #f2f2f2;
+                    }
+                </style>
+            </head>
+            <body>
+                <h1>APIdog Test Report</h1>
+                <h2>Execution Summary</h2>
+                <p>Total Test Cases: ${jsonData.item.length}</p>
+                <p>Passed: ${jsonData.item.filter(testItem => testItem.response && testItem.response.length > 0 && testItem.response[0].code === 200).length}</p>
+                <p>Failed: ${jsonData.item.filter(testItem => !testItem.response || testItem.response.length === 0 || testItem.response[0].code !== 200).length}</p>
+                <h2>Test Details</h2>
+                <table>
+                    <tr>
+                        <th>Test Case Name</th>
+                        <th>Request Method</th>
+                        <th>Request URL</th>
+                        <th>Response Code</th>
+                    </tr>
+        `;
+
+        // Add test details to HTML content
+        jsonData.item.forEach(testItem => {
+            const testName = testItem.name;
+            const requestMethod = testItem.request ? testItem.request.method : 'N/A';
+            const requestUrl = testItem.request ? testItem.request.url.protocol + "://" + testItem.request.url.host.join("/") + "/" + testItem.request.url.path.join("/") : 'N/A';
+            const responseCode = testItem.response && testItem.response.length > 0 ? testItem.response[0].code : 'N/A';
+
             htmlContent += `
                 <tr>
-                    <td>${subItem.id}</td>
-                    <td>${subItem.name}</td>
-                    <td>${subItem.request.method}</td>
-                    <td>${subItem.request.url.protocol}://${subItem.request.url.host.join('/')}${subItem.request.url.path.join('/')}</td>
-                    <td>${requestHeaders}</td>
+                    <td>${testName}</td>
+                    <td>${requestMethod}</td>
+                    <td>${requestUrl}</td>
                     <td>${responseCode}</td>
-                    <td>${responseHeaders}</td>
-                    <td>${responseBody}</td>
                 </tr>
             `;
         });
-    });
 
-    htmlContent += `
-            </tbody>
-        </table>
-    </body>
-    </html>
-    `;
-
-    return htmlContent;
-}
-
-function convertJsonToHtml(jsonFilePath, htmlFilePath) {
-    try {
-        // Read JSON data from file
-        const jsonData = JSON.parse(fs.readFileSync(jsonFilePath, 'utf-8'));
-
-        // Generate HTML report
-        const htmlContent = generateHtmlReport(jsonData);
+        // Close HTML content
+        htmlContent += `
+                </table>
+            </body>
+            </html>
+        `;
 
         // Write HTML content to file
-        fs.writeFileSync(htmlFilePath, htmlContent);
+        fs.writeFileSync(htmlFilePath, htmlContent, 'utf-8');
 
-        console.log('JSON converted to HTML successfully.');
+        console.log('JSON report converted to HTML successfully.');
     } catch (error) {
-        console.error('Error converting JSON to HTML:', error.message);
+        console.error('Error converting JSON to HTML:', error);
     }
 }
 
-// Parse command-line arguments
-const args = process.argv.slice(2);
-if (args.length !== 2) {
-    console.error('Usage: node convertToJsonToHtml.js <input.json> <output.html>');
-    process.exit(1);
-}
+// Example usage
+const jsonFilePath = 'testArtifacts/apidog_report.json';
+const htmlFilePath = 'testArtifacts/apidog_report.html';
 
-// Extract file paths from command-line arguments
-const jsonFilePath = args[0];
-const htmlFilePath = args[1];
-
-// Convert JSON to HTML
 convertJsonToHtml(jsonFilePath, htmlFilePath);
