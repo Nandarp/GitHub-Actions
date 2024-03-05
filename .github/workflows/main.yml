@@ -34,7 +34,7 @@ jobs:
 
       - name: Run Newman with HTML report
         run: |
-          newman run "${{ steps.find-report.outputs.report_path }}" -r htmlextra --reporter-htmlextra-export "${{ steps.find-report.outputs.report_path }}.htmlextra"
+          newman run "${{ steps.find-report.outputs.report_path }}" -r htmlextra --reporter-htmlextra-export "${{ steps.find-report.outputs.report_path }}_report.htmlextra"
 
       - name: Output the results
         uses: actions/upload-artifact@v3
