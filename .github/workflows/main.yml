@@ -1,4 +1,4 @@
-name: Run Newman tests and generate HTML report
+name: Run APIdog tests and generate HTML report
 on: 
   workflow_dispatch:
 
@@ -8,20 +8,36 @@ jobs:
     steps:
       - name: Checkout code
         uses: actions/checkout@v2
-
-      - name: Install Newman and newman-reporter-htmlextra
-        run: |
-          npm install -g newman newman-reporter-htmlextra
-
+      
+      - name: Install SendGrid library
+        run: npm install @sendgrid/mail
+      
       - name: Create testArtifacts directory
         run: mkdir -p testArtifacts
-
-      - name: Run Newman tests and generate HTML report
-        run: |
-          newman run https://api.apidog.com/api/v1/projects/455055/api-test/ci-config/349135/detail?token=xrwGYepeqT3Yx1KYguS0Pt -r htmlextra
       
+      - name: Install Node.js
+        uses: actions/setup-node@v2
+        with:
+          node-version: '14'
+      
+      - name: Install APIdog CLI
+        run: npm install -g apidog-cli
+      
+      - name: Run APIdog tests and generate HTML report
+        run: |
+          apidog run https://api.apidog.com/api/v1/projects/455055/api-test/ci-config/349133/detail?token=x3TW6wfE-41UZYJuI8PTqk -r html
+      
+      - name: Convert HTML report to HTML Extra (htmlextra)
+        run: |
+          newman run apidog-reports -r htmlextra --reporter-htmlextra-export testArtifacts/report.html
+
       - name: Output the results
         uses: actions/upload-artifact@v3
         with: 
           name: Reports
-          path: ${{ github.workspace }}/testArtifacts/
+          path: ${{ github.workspace }}/apidog-reports/
+          
+      - name: Send email with HTML Extra (htmlextra) report
+        run: node sendEmail.js
+        env:
+          SENDGRID_API_KEY: ${{ secrets.SENDGRID_API_KEY }}
