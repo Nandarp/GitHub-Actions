@@ -29,7 +29,7 @@ jobs:
       
       - name: Convert HTML report to HTML Extra (htmlextra)
         run: |
-          newman run apidog-reports -r htmlextra --reporter-htmlextra-export testArtifacts/report.html
+          newman run apidog-reports/apidog_report.html -r htmlextra --reporter-htmlextra-export testArtifacts/report.html
 
       - name: Output the results
         uses: actions/upload-artifact@v3
