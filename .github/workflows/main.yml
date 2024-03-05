@@ -8,7 +8,17 @@ jobs:
     steps:
       - name: Checkout code
         uses: actions/checkout@v2
-
+        
+      - name: Install SendGrid library
+        run: npm install @sendgrid/mail
+      
+      - name: Install Node.js
+        uses: actions/setup-node@v2
+        with:
+          node-version: '20'
+      
+      - name: Install APIdog CLI
+        run: npm install -g apidog-cli
       - name: Install Newman
         run: npm install -g newman newman-reporter-htmlextra
 
