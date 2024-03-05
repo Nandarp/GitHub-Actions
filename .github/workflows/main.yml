@@ -31,11 +31,11 @@ jobs:
         uses: actions/upload-artifact@v3
         with: 
           name: Reports
-          path: ${{ github.workspace }}/apidog-reports/
+          path: ${{ github.workspace }}/testArtifacts
           
       - name: Convert HTML report to HTML Extra (htmlextra)
         run: |
-          newman run ${{ github.workspace }}/apidog-reports/apidog_report*.html -r htmlextra --reporter-htmlextra-export testArtifacts/report.html
+          newman run ${{ github.workspace }}/testArtifacts/apidog_report*.html -r htmlextra --reporter-htmlextra-export testArtifacts/report.html
 
           
       - name: Send email with HTML Extra (htmlextra) report
