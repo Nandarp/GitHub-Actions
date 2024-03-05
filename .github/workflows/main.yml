@@ -22,7 +22,7 @@ jobs:
       
       - name: Run API tests and generate HTML report
         run: |
-          newman run https://api.apidog.com/api/v1/projects/455055/api-test/ci-config/349133/detail?token= -r htmlextra
+          newman run https://api.apidog.com/api/v1/projects/455055/api-test/ci-config/349135/detail?token=xrwGYepeqT3Yx1KYguS0Pt -r htmlextra
       
       - name: Output the results
         uses: actions/upload-artifact@v3
