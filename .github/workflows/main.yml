@@ -24,4 +24,4 @@ jobs:
         uses: actions/upload-artifact@v3
         with: 
           name: Reports
-          path: ${{ github.workspace }}/newman/
+          path: ${{ github.workspace }}/testArtifacts/
