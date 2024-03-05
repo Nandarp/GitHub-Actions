@@ -1,4 +1,4 @@
-name: Run API tests and generate HTML report
+name: Run Newman tests and generate HTML report
 on: 
   workflow_dispatch:
 
@@ -8,19 +8,15 @@ jobs:
     steps:
       - name: Checkout code
         uses: actions/checkout@v2
-      
-      - name: Install Newman
-        run: npm install -g newman
-      
+
+      - name: Install Newman and newman-reporter-htmlextra
+        run: |
+          npm install -g newman newman-reporter-htmlextra
+
       - name: Create testArtifacts directory
         run: mkdir -p testArtifacts
-      
-      - name: Install Node.js
-        uses: actions/setup-node@v2
-        with:
-          node-version: '20'
-      
-      - name: Run API tests and generate HTML report
+
+      - name: Run Newman tests and generate HTML report
         run: |
           newman run https://api.apidog.com/api/v1/projects/455055/api-test/ci-config/349135/detail?token=xrwGYepeqT3Yx1KYguS0Pt -r htmlextra
       
@@ -28,9 +24,4 @@ jobs:
         uses: actions/upload-artifact@v3
         with: 
           name: Reports
-          path: ${{ github.workspace }}/testArtifacts/
-
-      - name: Send email with HTML report
-        run: node sendEmail.js
-        env:
-          SENDGRID_API_KEY: ${{ secrets.SENDGRID_API_KEY }}
+          path: ${{ github.workspace }}/newman/
