@@ -40,7 +40,7 @@ jobs:
         uses: actions/upload-artifact@v3
         with: 
           name: Reports
-          path: ${{ steps.find-report.outputs.report_path }}.htmlextra
+          path: ${{ steps.find-report.outputs.report_path }}_report.htmlextra
 
       - name: Send email with HTML report
         run: node sendEmail.js
