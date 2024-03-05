@@ -14,7 +14,10 @@ jobs:
 
       - name: Create testArtifacts directory
         run: mkdir -p testArtifacts
-
+      
+      - name: Install Apidog CLI
+        run: npm install -g apidog-cli
+      
       - name: Run APIdog tests and generate HTML report
         run: |
           apidog run https://api.apidog.com/api/v1/projects/455055/api-test/ci-config/349135/detail?token=xrwGYepeqT3Yx1KYguS0Pt -r html
