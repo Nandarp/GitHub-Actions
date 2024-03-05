@@ -85,3 +85,8 @@ jobs:
         with:
           name: newman_htmlextra_reports
           path: newman/*.html
+
+      - name: Send email with HTML report
+        run: node sendEmail.js
+        env:
+          SENDGRID_API_KEY: ${{ secrets.SENDGRID_API_KEY }}
