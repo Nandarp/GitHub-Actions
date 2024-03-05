@@ -35,7 +35,7 @@ jobs:
           
       - name: Convert HTML report to HTML Extra (htmlextra)
         run: |
-          newman run ${{ github.workspace }}/apidog-reports/apidog_report.html -r htmlextra --reporter-htmlextra-export testArtifacts/report.html
+          newman run ${{ github.workspace }}/apidog-reports/apidog_report*.html -r htmlextra --reporter-htmlextra-export testArtifacts/report.html
 
           
       - name: Send email with HTML Extra (htmlextra) report
