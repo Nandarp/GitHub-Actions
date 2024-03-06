@@ -1,38 +1,47 @@
-import json
-from bs4 import BeautifulSoup
+const fs = require('fs');
+const { JSDOM } = require('jsdom');
 
-def parse_html_report(html_file):
-    with open(html_file, 'r') as f:
-        soup = BeautifulSoup(f, 'html.parser')
+function parseHtmlReport(htmlFile) {
+    const htmlContent = fs.readFileSync(htmlFile, 'utf-8');
+    const dom = new JSDOM(htmlContent);
+    const document = dom.window.document;
 
-        # Extract relevant information from the HTML report
-        # Modify this part according to the structure of your APIdog HTML report
-        requests = []
-        for row in soup.find_all('tr'):
-            request = {}
-            cells = row.find_all('td')
-            if len(cells) >= 3:
-                request['name'] = cells[0].get_text()
-                request['method'] = cells[1].get_text()
-                request['url'] = cells[2].get_text()
-                # You can extract more information as needed
-                requests.append(request)
+    // Extract relevant information from the HTML report
+    // Modify this part according to the structure of your APIdog HTML report
+    const requests = [];
+    const rows = document.querySelectorAll('tr');
+    rows.forEach(row => {
+        const cells = row.querySelectorAll('td');
+        if (cells.length >= 3) {
+            const request = {
+                name: cells[0].textContent.trim(),
+                method: cells[1].textContent.trim(),
+                url: cells[2].textContent.trim()
+                // You can extract more information as needed
+            };
+            requests.push(request);
+        }
+    });
 
-    return requests
+    return requests;
+}
 
-def main():
-    html_report_file = 'apidog-reports/apidog-report*.html'
-    requests = parse_html_report(html_report_file)
+function main() {
+    const htmlReportFile = `${process.env.GITHUB_WORKSPACE}/apidog-reports/apidog-report-2024-03-05-14-03-12-654-0.html`;
+    const requests = parseHtmlReport(htmlReportFile);
 
-    # Convert requests to Newman-compatible format (JSON)
-    newman_collection = {
-        'info': {'name': 'APIdog Collection'},
-        'item': [{'name': req['name'], 'request': {'method': req['method'], 'url': req['url']}} for req in requests]
-    }
+    // Convert requests to Newman-compatible format (JSON)
+    const newmanCollection = {
+        info: { name: 'APIdog Collection' },
+        item: requests.map(req => ({
+            name: req.name,
+            request: { method: req.method, url: req.url }
+        }))
+    };
 
-    # Write the Newman-compatible collection to a JSON file
-    with open('converted_collection.json', 'w') as f:
-        json.dump(newman_collection, f, indent=4)
+    // Write the Newman-compatible collection to a JSON file
+    const outputFile = `${process.env.GITHUB_WORKSPACE}/converted_collection.json`;
+    fs.writeFileSync(outputFile, JSON.stringify(newmanCollection, null, 4));
+}
 
-if __name__ == '__main__':
-    main()
+main();
