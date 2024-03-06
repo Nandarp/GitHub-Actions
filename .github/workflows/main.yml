@@ -12,18 +12,18 @@ jobs:
       - name: Install Node.js
         uses: actions/setup-node@v2
         with:
-          node-version: '20'
-          
+          node-version: '14'
+
       - name: Install Apidog CLI
         run: npm install -g apidog-cli
-        
-      - name: Install dependencies
-        run: |
-          npm install fs jsdom
 
       - name: Running Test Scenario
         run: apidog run https://api.apidog.com/api/v1/projects/455055/api-test/ci-config/349135/detail?token=xrwGYepeqT3Yx1KYguS0Pt -r html
       
+      - name: Install dependencies
+        run: |
+          npm install jsdom
+
       - name: Parse APIdog HTML report and convert to Newman-compatible format
         run: |
           node <<EOF
