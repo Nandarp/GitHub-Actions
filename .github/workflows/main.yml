@@ -1,92 +1,47 @@
-name: Generate Newman htmlextra Reports from APIdog HTML Reports
-on:
+name: Run APIdog tests and generate htmlextra report
+on: 
   workflow_dispatch:
 
 jobs:
-  generate_reports:
+  test_and_generate_report:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout code
         uses: actions/checkout@v2
-
+      
+      - name: Install SendGrid library
+        run: npm install @sendgrid/mail
+      
+      - name: Create testArtifacts directory
+        run: mkdir -p testArtifacts
+      
       - name: Install Node.js
         uses: actions/setup-node@v2
         with:
           node-version: '20'
-
-      - name: Install Apidog CLI
-        run: npm install -g apidog-cli
-
-      - name: Running Test Scenario
-        run: apidog run https://api.apidog.com/api/v1/projects/455055/api-test/ci-config/349135/detail?token=xrwGYepeqT3Yx1KYguS0Pt -r html
       
-      - name: Install dependencies
+      - name: Install APIdog CLI
+        run: npm install -g apidog-cli
+      
+      - name: Run APIdog tests and generate HTML report
         run: |
-          npm install jsdom
-
-      - name: Parse APIdog HTML report and convert to Newman-compatible format
+          apidog run https://api.apidog.com/api/v1/projects/455055/api-test/ci-config/349133/detail?token=x3TW6wfE-41UZYJuI8PTqk -r json
+          
+      - name: Install Newman and htmlextra reporter
         run: |
-          node <<EOF
-          const fs = require('fs');
-          const { JSDOM } = require('jsdom');
-
-          function parseHtmlReport(htmlFile) {
-              const htmlContent = fs.readFileSync(htmlFile, 'utf-8');
-              const dom = new JSDOM(htmlContent);
-              const document = dom.window.document;
-
-              // Extract relevant information from the HTML report
-              // Modify this part according to the structure of your APIdog HTML report
-              const requests = [];
-              const rows = document.querySelectorAll('tr');
-              rows.forEach(row => {
-                  const cells = row.querySelectorAll('td');
-                  if (cells.length >= 3) {
-                      const request = {
-                          name: cells[0].textContent.trim(),
-                          method: cells[1].textContent.trim(),
-                          url: cells[2].textContent.trim()
-                          // You can extract more information as needed
-                      };
-                      requests.push(request);
-                  }
-              });
-
-              return requests;
-          }
-
-          function main() {
-              const htmlReportFile = '${{ github.workspace }}/apidog-reports/apidog-report*.html';
-              const requests = parseHtmlReport(htmlReportFile);
-
-              // Convert requests to Newman-compatible format (JSON)
-              const newmanCollection = {
-                  info: { name: 'APIdog Collection' },
-                  item: requests.map(req => ({
-                      name: req.name,
-                      request: { method: req.method, url: req.url }
-                  }))
-              };
-
-              // Write the Newman-compatible collection to a JSON file
-              const outputFile = '${{ github.workspace }}/converted_collection.json';
-              fs.writeFileSync(outputFile, JSON.stringify(newmanCollection, null, 4));
-          }
-
-          main();
-          EOF
-
-      - name: Run Newman with converted collection and generate htmlextra reports
+          npm install -g newman newman-reporter-htmlextra
+      
+      - name: Convert JSON report to htmlextra format
         run: |
-          newman run ${{ github.workspace }}/converted_collection.json -r htmlextra
-
-      - name: Upload htmlextra report artifact
-        uses: actions/upload-artifact@v2
-        with:
-          name: newman_htmlextra_reports
-          path: newman/*.html
-
-      - name: Send email with HTML report
+          newman run ${{ github.workspace }}/apidog-reports/*.json -r htmlextra --reporter-htmlextra-export ${{ github.workspace }}/testArtifacts/htmlextra-report.html
+      
+      - name: Output the results
+        uses: actions/upload-artifact@v3
+        with: 
+          name: htmlextra_report
+          path: ${{ github.workspace }}/testArtifacts/htmlextra-report.html
+          
+      - name: Send email with htmlextra report
         run: node sendEmail.js
         env:
           SENDGRID_API_KEY: ${{ secrets.SENDGRID_API_KEY }}
