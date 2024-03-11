@@ -32,7 +32,7 @@ if (reportFile) {
       attachments: [
         {
           content: base64Content,
-          filename: 'apidog_report.htmlextra',
+          filename: 'apidog_report.html',
           type: 'text/html',
           disposition: 'attachment',
         },
