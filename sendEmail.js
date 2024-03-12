@@ -37,7 +37,7 @@ if (reportFile) {
  
         // Construct the email message
         const msg = {
-            to: 'snehav@anthology.com', // Change this to the recipient's email address
+            to: 'nandakumarap@anthology.com', // Change this to the recipient's email address
             from: 'ivpnotifications@products.anthology.com', // Change this to your verified sender email in SendGrid
             subject: 'APIdog Test Report',
             text: 'APIdog test report is attached.',
