@@ -1,38 +1,45 @@
 name: Run APIdog Tests and Send Email
-
+ 
 on:
   workflow_dispatch
-
+ 
 jobs:
   test_and_send_email:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout code
         uses: actions/checkout@v2
-
+ 
       - name: Install SendGrid library
         run: npm install @sendgrid/mail
-
+ 
       - name: Install Node.js
         uses: actions/setup-node@v2
         with:
-          node-version: '16'
-
-      - name: Update Newman to latest version
-        run: npm install -g newman@latest
-
+          node-version: '16' # Upgrade Node.js to version 16 or higher
+ 
       - name: Install APIdog CLI
         run: npm install -g apidog-cli
-
+ 
       - name: Install Newman and HTML reporter
         run: npm install -g newman newman-reporter-htmlextra
-
-      - name: Run APIdog tests and generate Newman HTML report
-        run: |
-          apidog run https://api.apidog.com/api/v1/projects/455055/api-test/ci-config/350185/detail?token=x8TGslzNjbHS-cFqe8gMec -r json
-          newman run $(find . -name 'apidog-report-*.json') --reporters cli,htmlextra --reporter-htmlextra-export newman-report.html
-
-      - name: Send email with Newman HTML report
+ 
+      - name: Run APIdog tests and generate HTML report
+        run: apidog run https://api.apidog.com/api/v1/projects/469204/api-test/ci-config/349543/detail?token=xdGMPHHcIsP80b1GLkpfHV -r json
+ 
+      - name: Upload Artifact
+        uses: actions/upload-artifact@v3
+        with:
+          name: reports
+          path: ${{ github.workspace }}/apidog-reports/
+ 
+      - name: Send email with HTML report
         run: node sendEmail.js
         env:
           SENDGRID_API_KEY: ${{ secrets.SENDGRID_API_KEY }}
+ 
+      - name: Archive Newman HTML report
+        uses: actions/upload-artifact@v2
+        with:
+          name: newman-report
+          path: newman-report.html
