@@ -25,7 +25,7 @@ jobs:
         run: npm install -g newman newman-reporter-htmlextra
  
       - name: Run APIdog tests and generate HTML report
-        run: apidog run https://api.apidog.com/api/v1/projects/455055/api-test/ci-config/349701/detail?token=xcEULUNaxgnauOxzw3wbgB -r json
+        run: apidog run https://api.apidog.com/api/v1/projects/469204/api-test/ci-config/349543/detail?token=xdGMPHHcIsP80b1GLkpfHV -r json
  
       - name: Upload Artifact
         uses: actions/upload-artifact@v3
