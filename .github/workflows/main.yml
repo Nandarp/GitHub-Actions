@@ -19,7 +19,7 @@ jobs:
           node-version: '16' # Upgrade Node.js to version 16 or higher
  
       - name: Install APIdog CLI
-        run: npm install -g apidog-cli
+        run: npm install -g apidog-cli@latest
  
       - name: Install Newman and HTML reporter
         run: npm install -g newman newman-reporter-htmlextra
